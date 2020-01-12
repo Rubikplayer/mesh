@@ -4,5 +4,5 @@ scipy
 pyopengl
 pillow
 pyzmq
-pyyaml
+# pyyaml # you might want to install pyyaml manually by `conda install pyyaml` or `pip install PyYAML`
 opencv-python
