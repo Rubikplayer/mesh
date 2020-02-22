@@ -160,9 +160,29 @@ def concatenate_mesh(self, mesh):
         self.v = mesh.v.copy()
         self.vc = mesh.vc.copy() if hasattr(mesh, 'vc') else None
     elif len(mesh.v):
-        self.f = np.concatenate([self.f, mesh.f.copy() + len(self.v)])
+
+        def _check(ins, attr):
+            return hasattr(ins, attr) and getattr(ins, attr) is not None
+
+        # f
+        if not _check(mesh, 'f'):
+            pass
+        elif _check(self, 'f'):
+            self.f = np.concatenate([self.f, mesh.f.copy() + len(self.v)])
+        else:
+            self.f = mesh.f.copy() + len(self.v)
+
+        # v (assumed always exists)
         self.v = np.concatenate([self.v, mesh.v])
-        self.vc = np.concatenate([self.vc, mesh.vc]) if (hasattr(mesh, 'vc') and hasattr(self, 'vc')) else None
+
+        # vc
+        if _check(self, 'vc') or _check(mesh, 'vc'):
+            self_vc = self.vc if _check(self, 'vc') else 0.9 * np.ones_like(self.v)
+            mesh_vc = mesh.vc if _check(mesh, 'vc') else 0.9 * np.ones_like(mesh.v)
+            self.vc = np.concatenate([self_vc, mesh_vc])
+        else:
+            self.vc = None
+
     return self
 
 
